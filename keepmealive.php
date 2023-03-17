@@ -2,6 +2,9 @@
 
 include './constants.php';
 
+echo 'Hey There!';
+
+
 function sendMessage($chat_id, $text)
 {
     global $bot_api;
@@ -15,7 +18,6 @@ function sendPhoto($chat_id, $photo, $caption='')
     global $bot_api;
     $request_url="https://api.telegram.org/bot".$bot_api."/";
     $url=$request_url.'sendPhoto?chat_id='.$chat_id.'&photo='.urlencode($photo).'&caption='.urlencode($caption).'&parse_mode=Markdown';
-    echo $url;
     file_get_contents($url);
 }
 
@@ -75,5 +77,9 @@ Examples:
     }
 }
 
-sendWordnik();
+if(rand()%2==0){
+    sendWordnik();
+}else{
+    sendUnsplash();
+}
 
