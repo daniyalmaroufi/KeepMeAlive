@@ -6,7 +6,7 @@ function sendMessage($chat_id, $text)
 {
     global $bot_api;
     $request_url="https://api.telegram.org/bot".$bot_api."/";
-    $url = $request_url . 'sendMessage?chat_id=' . $chat_id . '&text=' . urlencode($text);
+    $url = $request_url . 'sendMessage?chat_id=' . $chat_id . '&text=' . urlencode($text).'&parse_mode=Markdown';
     file_get_contents($url);
 }
 
@@ -43,4 +43,17 @@ A photo by ['.$unsplash['name'].']('.$unsplash['link'].').';
     foreach ($chatids as $chatid) {
         sendPhoto($chatid, $unsplash['photo'],$caption);
     }
+}
+
+function getWordnik()
+{
+    global $wordnik_api;
+    $request_url='https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key='.$wordnik_api;
+    $result=json_decode(file_get_contents($request_url), true);
+    $wordnik=array();
+    $wordnik['word']=$result['word'];
+    $wordnik['def']=$result['definitions'][0]['text'];
+    $wordnik['examples'][0]=$result['examples'][0]['text'];
+    $wordnik['examples'][1]=$result['examples'][1]['text'];
+    return $wordnik;
 }
