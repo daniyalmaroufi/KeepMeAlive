@@ -57,3 +57,23 @@ function getWordnik()
     $wordnik['examples'][1]=$result['examples'][1]['text'];
     return $wordnik;
 }
+
+function sendWordnik()
+{
+    global $chatids;
+    $wordnik=getWordnik();
+    $text='*'.$wordnik['word'].'*
+
+▶️ '.$wordnik['def'].'
+
+Examples:
+🔻 '.$wordnik['examples'][0].'
+
+🔻 '.$wordnik['examples'][1];
+    foreach ($chatids as $chatid) {
+        sendMessage($chatid,$text);
+    }
+}
+
+sendWordnik();
+
