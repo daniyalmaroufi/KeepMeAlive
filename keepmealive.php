@@ -32,4 +32,12 @@ function getUnspalsh()
     return $unsplash;
 }
 
+$unsplash=getUnspalsh();
+$caption=ucfirst($unsplash['alt']).'.
+
+A photo by ['.$unsplash['name'].']('.$unsplash['link'].').';
+
+foreach ($chatids as $chatid) {
+    sendPhoto($chatid, $unsplash['photo'],$caption);
+}
 

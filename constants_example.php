@@ -8,3 +8,5 @@ $wordnik_api='...';
 
 $unsplash_api='...';
 
+$chatids=array('user_chat_id','@ChannelUsername');
+
