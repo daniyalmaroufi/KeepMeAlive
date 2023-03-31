@@ -43,20 +43,34 @@ function sendUnsplash()
 
 A photo by ['.$unsplash['name'].']('.$unsplash['link'].').';
     foreach ($chatids as $chatid) {
-        sendPhoto($chatid, $unsplash['photo'],$caption);
+        sendPhoto($chatid, $unsplash['photo'],$caption.'
+
+'.$chatid);
     }
 }
 
 function getWordnik()
 {
     global $wordnik_api;
-    $request_url='https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key='.$wordnik_api;
+    $request_url='https://api.wordnik.com/v4/words.json/randomWord?hasDictionaryDef=true&includePartOfSpeech=noun&excludePartOfSpeech=verb%2C%20adjective%2C%20adverb%2C%20interjection%2C%20pronoun%2C%20preposition%2C%20abbreviation%2C%20affix%2C%20article%2C%20auxiliary-verb%2C%20conjunction%2C%20definite-article%2C%20family-name%2C%20given-name%2C%20idiom%2C%20imperative%2C%20noun-plural%2C%20noun-posessive%2C%20past-participle%2C%20phrasal-prefix%2C%20proper-noun%2C%20proper-noun-plural%2C%20proper-noun-posessive%2C%20suffix%2C%20verb-intransitive&minCorpusCount=10000&maxCorpusCount=-1&minDictionaryCount=2&maxDictionaryCount=-1&minLength=5&maxLength=-1&api_key='.$wordnik_api;
     $result=json_decode(file_get_contents($request_url), true);
     $wordnik=array();
     $wordnik['word']=$result['word'];
-    $wordnik['def']=$result['definitions'][0]['text'];
-    $wordnik['examples'][0]=$result['examples'][0]['text'];
-    $wordnik['examples'][1]=$result['examples'][1]['text'];
+    $request_url='https://api.wordnik.com/v4/word.json/'.$wordnik['word'].'/definitions?limit=5&includeRelated=false&useCanonical=false&includeTags=false&api_key='.$wordnik_api;
+    $result=json_decode(file_get_contents($request_url), true);
+    $wordnik['url']=$result[0]['wordnikUrl'];
+    $i=0;
+    foreach ($result as $def) {
+        $wordnik['defs'][$i]=$def['text'];
+        $i=$i+1;
+    }
+    $request_url='https://api.wordnik.com/v4/word.json/'.$wordnik['word'].'/examples?includeDuplicates=false&useCanonical=false&limit=5&api_key='.$wordnik_api;
+    $result=json_decode(file_get_contents($request_url), true);
+    $i=0;
+    foreach ($result['examples'] as $example) {
+        $wordnik['examples'][$i]=$example['text'];
+        $i=$i+1;
+    }
     return $wordnik;
 }
 
@@ -64,16 +78,28 @@ function sendWordnik()
 {
     global $chatids;
     $wordnik=getWordnik();
-    $text='*'.$wordnik['word'].'*
+    $text='['.$wordnik['word'].']('.$wordnik['url'].')
 
-▶️ '.$wordnik['def'].'
+_Definitions:_
+';
+    foreach ($wordnik['defs'] as $def) {
+        $text=$text.'▶️ '.$def.'
 
-Examples:
-🔻 '.$wordnik['examples'][0].'
+';
+    }
+    $text=$text.'
 
-🔻 '.$wordnik['examples'][1];
+_Examples:_
+';
+    foreach ($wordnik['examples'] as $ex) {
+        $text=$text.'🔻 '.$ex.'
+
+';
+    }
     foreach ($chatids as $chatid) {
-        sendMessage($chatid,$text);
+        sendMessage($chatid,$text.'
+
+'.$chatid);
     }
 }
 
